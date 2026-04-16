@@ -40,6 +40,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function playMusic() {
+        // Set volume to a lower level if a video is playing (ducking)
+        bgMusic.volume = (introVideo.paused && mainVideo.paused) ? 1.0 : 0.15;
+        
         bgMusic.play().then(() => {
             isMusicPlaying = true;
             playIcon.style.display = 'none';
@@ -59,6 +62,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Transition to main video
         fadeOutIn(introVideo, mainVideo);
     });
+
+    // Helper to lower volume during video playback
+    const duckAudio = () => {
+        if (isMusicPlaying) bgMusic.volume = 0.15;
+    };
+
+    introVideo.addEventListener('play', duckAudio);
+    mainVideo.addEventListener('play', duckAudio);
 
     /**
      * Smoothly transitions from one video to another

@@ -140,3 +140,40 @@ video {
     height: 24px;
 }
 
+/* Greeting Card Overlay */
+#greeting-card {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    text-align: center;
+    z-index: 15;
+    pointer-events: none; /* Let clicks pass to the envelope */
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+#greeting-card h2 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 3rem;
+    color: var(--gold-bright);
+    margin-bottom: 0.5rem;
+}
+
+#greeting-card p {
+    font-size: 1.2rem;
+    color: #e0e0e0;
+    font-weight: 300;
+    letter-spacing: 0.1rem;
+}
+
+/* Adjustments for Mobile */
+@media (max-width: 600px) {
+    #greeting-card h2 {
+        font-size: 2rem;
+    }
+    #greeting-card p {
+        font-size: 0.9rem;
+    }
+}
+
