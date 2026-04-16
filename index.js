@@ -19,20 +19,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // 2. Prepare the video wrapper
         videoWrapper.classList.add('visible');
 
-        // 3. Show Greeting Card over video
-        setTimeout(() => {
-            greetingCard.style.opacity = '1';
-        }, 800);
-
         try {
-            // 4. Start playing the intro video
+            // 3. Start playing the intro video
             await introVideo.play();
             
-            // 5. Start Background Music
+            // 4. Start Background Music
             playMusic();
         } catch (error) {
             console.error("Interaction play failed:", error);
-            // Fallback: user interaction might be needed for audio too
         }
     });
 
@@ -83,16 +77,18 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {HTMLVideoElement} newVid 
      */
     function fadeOutIn(oldVid, newVid) {
-        // Show current video fade out if we had a layer, 
-        // but since they are stacked, we can just switch them.
-        
         oldVid.style.display = 'none';
         newVid.style.display = 'block';
         
         // Try to enter fullscreen for the main video
         requestFullScreen(newVid);
 
-        newVid.play().catch(e => console.log("Main video play blocked:", e));
+        newVid.play().then(() => {
+            // Show Greeting Card with 5 second delay over main video
+            setTimeout(() => {
+                greetingCard.style.opacity = '1';
+            }, 5000);
+        }).catch(e => console.log("Main video play blocked:", e));
     }
 
     /**
