@@ -155,7 +155,7 @@ video {
 /* Greeting Card Overlay - Positioned over video */
 #greeting-card {
     position: absolute;
-    top: 20px;
+    top: 50%;
     left: 0;
     width: 100%;
     text-align: center;
@@ -163,6 +163,7 @@ video {
     pointer-events: none;
     text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
     transition: opacity 1.5s ease;
+    transform: translateY(-50%);
 }
 
 #greeting-card h2 {
@@ -193,8 +194,10 @@ video {
     }
 
     #greeting-card {
-        top: 20px;
+        top: 50%;
+        transform: translateY(-50%);
     }
+
 
 
     #greeting-card h2 {
