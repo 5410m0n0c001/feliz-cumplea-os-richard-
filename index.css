@@ -182,11 +182,24 @@ video {
 
 /* Adjustments for Mobile */
 @media (max-width: 600px) {
-    #greeting-card h2 {
-        font-size: 2rem;
+    #video-wrapper {
+        width: 95%;
+        border-width: 8px; /* Thinner border for mobile cards */
     }
+
+    #greeting-card {
+        top: 15px; /* Stay closer to the top */
+    }
+
+    #greeting-card h2 {
+        font-size: 1.4rem; /* Much smaller for mobile */
+        font-weight: 400;
+    }
+
     #greeting-card p {
-        font-size: 0.9rem;
+        font-size: 0.75rem; /* Smaller subtext */
+        font-weight: 300;
     }
 }
+
 
