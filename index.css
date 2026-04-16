@@ -78,18 +78,30 @@ body {
 /* Video Section */
 #video-wrapper {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 800px;
+    height: auto;
+    aspect-ratio: 16 / 9;
     opacity: 0;
     visibility: hidden;
     transition: opacity 1s ease;
+    
+    /* Greeting Card Frame Effect */
+    border: 15px solid #ffffff;
+    box-shadow: 
+        0 20px 40px rgba(0,0,0,0.5),
+        inset 0 0 10px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    background: #000;
 }
 
 video {
     width: 100%;
     height: 100%;
+    display: block;
     object-fit: cover;
 }
 
@@ -140,31 +152,32 @@ video {
     height: 24px;
 }
 
-/* Greeting Card Overlay */
+/* Greeting Card Overlay - Positioned over video */
 #greeting-card {
     position: absolute;
-    top: 45%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
+    top: 20px;
+    left: 0;
+    width: 100%;
     text-align: center;
-    z-index: 15;
-    pointer-events: none; /* Let clicks pass to the envelope */
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    z-index: 20;
+    pointer-events: none;
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
+    transition: opacity 1.5s ease;
 }
 
 #greeting-card h2 {
     font-family: 'Great Vibes', cursive;
-    font-size: 3rem;
+    font-size: 2.5rem;
     color: var(--gold-bright);
-    margin-bottom: 0.5rem;
+    margin: 0;
 }
 
 #greeting-card p {
-    font-size: 1.2rem;
-    color: #e0e0e0;
+    font-size: 1rem;
+    color: #ffffff;
     font-weight: 300;
-    letter-spacing: 0.1rem;
+    margin: 0;
+    letter-spacing: 0.05rem;
 }
 
 /* Adjustments for Mobile */

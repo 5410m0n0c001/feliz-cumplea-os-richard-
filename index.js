@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const musicToggle = document.getElementById('music-toggle');
     const playIcon = document.getElementById('play-icon');
     const pauseIcon = document.getElementById('pause-icon');
+    const greetingCard = document.getElementById('greeting-card');
 
     let isMusicPlaying = false;
 
@@ -18,11 +19,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // 2. Prepare the video wrapper
         videoWrapper.classList.add('visible');
 
+        // 3. Show Greeting Card over video
+        setTimeout(() => {
+            greetingCard.style.opacity = '1';
+        }, 800);
+
         try {
-            // 3. Start playing the intro video
+            // 4. Start playing the intro video
             await introVideo.play();
             
-            // 4. Start Background Music
+            // 5. Start Background Music
             playMusic();
         } catch (error) {
             console.error("Interaction play failed:", error);
