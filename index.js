@@ -3,6 +3,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const videoWrapper = document.getElementById('video-wrapper');
     const introVideo = document.getElementById('intro-video');
     const mainVideo = document.getElementById('main-video');
+    const bgMusic = document.getElementById('bg-music');
+    const musicToggle = document.getElementById('music-toggle');
+    const playIcon = document.getElementById('play-icon');
+    const pauseIcon = document.getElementById('pause-icon');
+
+    let isMusicPlaying = false;
 
     // Handle Cover Click
     coverContainer.addEventListener('click', async () => {
@@ -14,15 +20,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             // 3. Start playing the intro video
-            // Browsers usually require a user interaction to play video with sound
             await introVideo.play();
+            
+            // 4. Start Background Music
+            playMusic();
         } catch (error) {
-            console.error("Video play failed:", error);
-            // Fallback: try muted
-            introVideo.muted = true;
-            introVideo.play();
+            console.error("Interaction play failed:", error);
+            // Fallback: user interaction might be needed for audio too
         }
     });
+
+    // Music Toggle Logic
+    musicToggle.addEventListener('click', () => {
+        if (isMusicPlaying) {
+            pauseMusic();
+        } else {
+            playMusic();
+        }
+    });
+
+    function playMusic() {
+        bgMusic.play().then(() => {
+            isMusicPlaying = true;
+            playIcon.style.display = 'none';
+            pauseIcon.style.display = 'block';
+        }).catch(e => console.log("Music play blocked:", e));
+    }
+
+    function pauseMusic() {
+        bgMusic.pause();
+        isMusicPlaying = false;
+        playIcon.style.display = 'block';
+        pauseIcon.style.display = 'none';
+    }
 
     // Handle Transitions between videos
     introVideo.addEventListener('ended', () => {

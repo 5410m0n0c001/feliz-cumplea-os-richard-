@@ -105,10 +105,38 @@ video {
     visibility: visible !important;
 }
 
-/* Fullscreen Button (optional, but good for mobile) */
-.overlay-controls {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    z-index: 100;
+
+/* Music Button Styles */
+.music-btn {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--gold);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
+
+.music-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+    border-color: var(--gold);
+    color: var(--gold-bright);
+}
+
+.music-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
