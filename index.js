@@ -25,8 +25,13 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // 4. Start Background Music
             playMusic();
+
+            // 5. Preload main video only after interaction to help with page load speed
+            mainVideo.load();
         } catch (error) {
             console.error("Interaction play failed:", error);
+            // Fallback: if play fails, still show the video wrapper
+            videoWrapper.classList.add('visible');
         }
     });
 
@@ -96,12 +101,14 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {Element} element 
      */
     function requestFullScreen(element) {
-        if (element.requestFullscreen) {
-            element.requestFullscreen();
-        } else if (element.webkitRequestFullscreen) { /* Safari */
-            element.webkitRequestFullscreen();
-        } else if (element.msRequestFullscreen) { /* IE11 */
-            element.msRequestFullscreen();
+        try {
+            if (element.requestFullscreen) {
+                element.requestFullscreen().catch(err => console.log("Fullscreen error:", err));
+            } else if (element.webkitRequestFullscreen) { /* Safari */
+                element.webkitRequestFullscreen();
+            }
+        } catch (e) {
+            console.warn("Fullscreen request failed", e);
         }
     }
 });

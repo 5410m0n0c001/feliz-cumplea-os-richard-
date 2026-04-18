@@ -102,7 +102,8 @@ video {
     width: 100%;
     height: 100%;
     display: block;
-    object-fit: cover;
+    object-fit: contain; /* Ensure the whole video is visible */
+    background: #000; /* Black bars if aspect ratio doesn't match */
 }
 
 /* Transitions */
@@ -185,12 +186,13 @@ video {
 @media (max-width: 600px) {
     #video-wrapper {
         width: 100%;
-        height: 100%;
+        height: auto; /* Allow the video to define its height on mobile */
+        aspect-ratio: 16 / 9; /* Keep the standard video aspect ratio */
         max-width: none;
-        border: none;
-        box-shadow: none;
-        border-radius: 0;
-        aspect-ratio: auto;
+        border: 4px solid #ffffff; /* Thinner border for mobile */
+        box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        border-radius: 4px;
+        background: #000;
     }
 
     #greeting-card {
