@@ -8,51 +8,227 @@ document.addEventListener('DOMContentLoaded', () => {
     const playIcon = document.getElementById('play-icon');
     const pauseIcon = document.getElementById('pause-icon');
     const greetingCard = document.getElementById('greeting-card');
+    const shareBtn = document.getElementById('share-btn');
+    const tourBtn = document.getElementById('tour-btn');
+    const videoToggle = document.getElementById('video-toggle');
+    const vPlayIcon = document.getElementById('v-play-icon');
+    const vPauseIcon = document.getElementById('v-pause-icon');
+    
+    // Tour Elements
+    const tourOverlay = document.getElementById('tour-overlay');
+    const tourCard = tourOverlay.querySelector('.tour-card');
+    const tourTitle = document.getElementById('tour-title');
+    const tourText = document.getElementById('tour-text');
+    const tourNext = document.getElementById('tour-next');
+    const tourPrev = document.getElementById('tour-prev');
+    const tourClose = document.getElementById('tour-close');
+    const spotlightHole = document.getElementById('spotlight-hole');
 
     let isMusicPlaying = false;
+    let isVideoPlaying = false;
+    let currentStepIndex = -1;
 
-    // Handle Cover Click
-    coverContainer.addEventListener('click', async () => {
-        // 1. Fade out the cover
-        coverContainer.classList.add('hidden');
+    const tourSteps = [
+        {
+            target: 'cover-container',
+            title: "Bienvenido",
+            text: "Esta es una felicitación totalmente personalizable. Toca el sobre para descubrir la magia.",
+            placement: 'bottom'
+        },
+        {
+            target: 'video-wrapper',
+            title: "Animación Exclusiva",
+            text: "El diseño y la apertura del sobre son 100% editables para cualquier ocasión.",
+            placement: 'center'
+        },
+        {
+            target: 'video-toggle',
+            title: "Mensaje de Felicitación",
+            text: "Presiona este botón para reproducir o pausar tu mensaje de felicitación personalizado.",
+            placement: 'left'
+        },
+        {
+            target: 'music-toggle',
+            title: "Control Musical",
+            text: "Prueba a activar o pausar la música aquí. Es una pieza única para tu felicitación.",
+            placement: 'left'
+        },
+        {
+            target: 'share-btn',
+            title: "Comparte la Alegría",
+            text: "Usa este botón para enviar esta experiencia personalizada a quien tú quieras.",
+            placement: 'left'
+        }
+    ];
+
+    function updateSpotlight(targetEl) {
+        if (!targetEl) {
+            // Hide spotlight if no target
+            spotlightHole.setAttribute('width', '0');
+            spotlightHole.setAttribute('height', '0');
+            return;
+        }
+
+        const rect = targetEl.getBoundingClientRect();
+        const padding = 10;
         
-        // 2. Prepare the video wrapper
+        spotlightHole.setAttribute('x', rect.left - padding);
+        spotlightHole.setAttribute('y', rect.top - padding);
+        spotlightHole.setAttribute('width', rect.width + (padding * 2));
+        spotlightHole.setAttribute('height', rect.height + (padding * 2));
+        spotlightHole.setAttribute('rx', '12');
+    }
+
+    function positionCard(targetEl, placement) {
+        if (!targetEl || placement === 'center') {
+            tourCard.style.top = '50%';
+            tourCard.style.left = '50%';
+            tourCard.style.transform = 'translate(-50%, -50%)';
+            return;
+        }
+
+        const rect = targetEl.getBoundingClientRect();
+        let top, left;
+        const margin = 20;
+
+        if (placement === 'bottom') {
+            top = rect.bottom + margin;
+            left = rect.left + (rect.width / 2) - (tourCard.offsetWidth / 2);
+        } else if (placement === 'left') {
+            top = rect.top;
+            left = rect.right + margin;
+        }
+
+        // Clamp to screen (Senior Polish: Ensuring visibility on all viewports)
+        const screenMargin = 15;
+        const viewportHeight = window.innerHeight;
+        const viewportWidth = window.innerWidth;
+
+        // Ensure left is within bounds
+        left = Math.max(screenMargin, Math.min(left, viewportWidth - tourCard.offsetWidth - screenMargin));
+        
+        // Ensure top is within bounds and doesn't push the card off-bottom
+        top = Math.max(screenMargin, Math.min(top, viewportHeight - tourCard.offsetHeight - screenMargin));
+
+        // Fallback: If target is bottom and no space, place at top
+        if (placement === 'bottom' && (top + tourCard.offsetHeight > viewportHeight)) {
+            top = Math.max(screenMargin, rect.top - tourCard.offsetHeight - margin);
+        }
+
+        tourCard.style.top = `${top}px`;
+        tourCard.style.left = `${left}px`;
+        tourCard.style.transform = 'none';
+    }
+
+    function showStep(index) {
+        if (index < 0 || index >= tourSteps.length) {
+            closeTour();
+            return;
+        }
+
+        currentStepIndex = index;
+        const step = tourSteps[index];
+        const targetEl = document.getElementById(step.target);
+
+        tourTitle.textContent = step.title;
+        tourText.textContent = step.text;
+        
+        tourOverlay.style.display = 'block';
+        setTimeout(() => tourOverlay.classList.add('active'), 10);
+
+        updateSpotlight(targetEl);
+        positionCard(targetEl, step.placement);
+
+        tourPrev.style.visibility = index === 0 ? 'hidden' : 'visible';
+        tourNext.textContent = index === tourSteps.length - 1 ? 'Finalizar' : 'Siguiente';
+    }
+
+    function closeTour() {
+        tourOverlay.classList.remove('active');
+        setTimeout(() => {
+            tourOverlay.style.display = 'none';
+            currentStepIndex = -1;
+        }, 300);
+    }
+
+    // --- Interactive Logic ---
+
+    // Start tour on load
+    setTimeout(() => { if (currentStepIndex === -1) showStep(0); }, 1500);
+
+    // Step 0 -> 1: Envelope Click
+    coverContainer.addEventListener('click', async () => {
+        if (currentStepIndex === 0) showStep(1);
+        
+        coverContainer.classList.add('hidden');
         videoWrapper.classList.add('visible');
 
         try {
-            // 3. Start playing the intro video
             await introVideo.play();
-            
-            // 4. Start Background Music
             playMusic();
-
-            // 5. Preload main video only after interaction to help with page load speed
             mainVideo.load();
-        } catch (error) {
-            console.error("Interaction play failed:", error);
-            // Fallback: if play fails, still show the video wrapper
-            videoWrapper.classList.add('visible');
+        } catch (error) { console.error("Play error:", error); }
+    });
+
+    // Step 1 -> 2: Auto transition mid-intro or after click
+    introVideo.addEventListener('play', () => {
+        if (currentStepIndex === 1) {
+            setTimeout(() => { if (currentStepIndex === 1) showStep(2); }, 2500);
         }
     });
 
-    // Music Toggle Logic
-    musicToggle.addEventListener('click', () => {
-        if (isMusicPlaying) {
-            pauseMusic();
+    // Step 2 -> 3: Intro Video Ends
+    introVideo.addEventListener('ended', () => {
+        fadeOutIn(introVideo, mainVideo);
+        videoToggle.style.display = 'flex'; // Show the video control button
+        // Sync with the actual start of the congratulatory message
+        setTimeout(() => {
+            if (currentStepIndex >= 0 && currentStepIndex <= 2) {
+                showStep(2); // Show "Mensaje de Felicitación" step (video button)
+            }
+        }, 800);
+    });
+
+    // Control Buttons logic
+    videoToggle.addEventListener('click', () => {
+        if (mainVideo.paused) {
+            mainVideo.play();
+            isVideoPlaying = true;
+            vPlayIcon.style.display = 'none';
+            vPauseIcon.style.display = 'block';
         } else {
-            playMusic();
+            mainVideo.pause();
+            isVideoPlaying = false;
+            vPlayIcon.style.display = 'block';
+            vPauseIcon.style.display = 'none';
+        }
+        if (currentStepIndex === 2) {
+            setTimeout(() => { showStep(3); }, 800);
         }
     });
 
+    // Step 3 -> 4: Music toggle interaction
+    musicToggle.addEventListener('click', () => {
+        isMusicPlaying ? pauseMusic() : playMusic();
+        if (currentStepIndex === 3) {
+            setTimeout(() => { showStep(4); }, 1000);
+        }
+    });
+
+    // Navigation
+    tourNext.addEventListener('click', () => showStep(currentStepIndex + 1));
+    tourPrev.addEventListener('click', () => showStep(currentStepIndex - 1));
+    tourClose.addEventListener('click', closeTour);
+    tourBtn.addEventListener('click', () => showStep(0));
+
+    // Audio & Transitions
     function playMusic() {
-        // Set volume to a lower level if a video is playing (ducking)
         bgMusic.volume = (introVideo.paused && mainVideo.paused) ? 1.0 : 0.15;
-        
         bgMusic.play().then(() => {
             isMusicPlaying = true;
             playIcon.style.display = 'none';
             pauseIcon.style.display = 'block';
-        }).catch(e => console.log("Music play blocked:", e));
+        }).catch(() => console.log("Music blocked"));
     }
 
     function pauseMusic() {
@@ -62,53 +238,54 @@ document.addEventListener('DOMContentLoaded', () => {
         pauseIcon.style.display = 'none';
     }
 
-    // Handle Transitions between videos
-    introVideo.addEventListener('ended', () => {
-        // Transition to main video
-        fadeOutIn(introVideo, mainVideo);
-    });
-
-    // Helper to lower volume during video playback
-    const duckAudio = () => {
-        if (isMusicPlaying) bgMusic.volume = 0.15;
-    };
-
-    introVideo.addEventListener('play', duckAudio);
-    mainVideo.addEventListener('play', duckAudio);
-
-    /**
-     * Smoothly transitions from one video to another
-     * @param {HTMLVideoElement} oldVid 
-     * @param {HTMLVideoElement} newVid 
-     */
     function fadeOutIn(oldVid, newVid) {
         oldVid.style.display = 'none';
         newVid.style.display = 'block';
-        
-        // Try to enter fullscreen for the main video
         requestFullScreen(newVid);
-
         newVid.play().then(() => {
-            // Show Greeting Card with 5 second delay over main video
-            setTimeout(() => {
-                greetingCard.style.opacity = '1';
-            }, 5000);
-        }).catch(e => console.log("Main video play blocked:", e));
+            isVideoPlaying = true;
+            vPlayIcon.style.display = 'none';
+            vPauseIcon.style.display = 'block';
+            setTimeout(() => { greetingCard.style.opacity = '1'; }, 5000);
+        }).catch(() => {
+            isVideoPlaying = false;
+            vPlayIcon.style.display = 'block';
+            vPauseIcon.style.display = 'none';
+            console.log("Video fail");
+        });
     }
 
-    /**
-     * Requests fullscreen mode for an element
-     * @param {Element} element 
-     */
     function requestFullScreen(element) {
         try {
-            if (element.requestFullscreen) {
-                element.requestFullscreen().catch(err => console.log("Fullscreen error:", err));
-            } else if (element.webkitRequestFullscreen) { /* Safari */
-                element.webkitRequestFullscreen();
-            }
-        } catch (e) {
-            console.warn("Fullscreen request failed", e);
-        }
+            if (element.requestFullscreen) element.requestFullscreen().catch(() => {});
+            else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen();
+        } catch (e) {}
     }
+
+    shareBtn.addEventListener('click', async () => {
+        const shareData = {
+            title: 'Felicitación Especial',
+            text: '¡Mira esta felicitación personalizada!',
+            url: window.location.href
+        };
+        try {
+            if (navigator.share) await navigator.share(shareData);
+            else {
+                alert('Copiado al portapapeles: ' + window.location.href);
+                navigator.clipboard.writeText(window.location.href);
+            }
+            if (currentStepIndex === 4) closeTour();
+        } catch (err) { console.error('Share error', err); }
+    });
+
+    // Handle window resize for spotlight
+    window.addEventListener('resize', () => {
+        if (currentStepIndex >= 0) {
+            const step = tourSteps[currentStepIndex];
+            const targetEl = document.getElementById(step.target);
+            updateSpotlight(targetEl);
+            positionCard(targetEl, step.placement);
+        }
+    });
 });
+
