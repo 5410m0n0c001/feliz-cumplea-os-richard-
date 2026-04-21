@@ -23,6 +23,42 @@ document.addEventListener('DOMContentLoaded', () => {
     const tourPrev = document.getElementById('tour-prev');
     const tourClose = document.getElementById('tour-close');
     const spotlightHole = document.getElementById('spotlight-hole');
+    const envelopeImg = document.getElementById('envelope');
+
+    // --- Smart Asset Loading ---
+    const assetMap = {
+        'envelope': { base: 'sobrec', exts: ['png', 'webp', 'jpg', 'jpeg'] },
+        'intro-video-source': { base: 'sobrev', exts: ['mp4', 'webm', 'mov'] },
+        'main-video-source': { base: 'video', exts: ['mp4', 'webm', 'mov'] },
+        'bg-music-source': { base: 'mañanitas', exts: ['mp3', 'wav', 'ogg'] }
+    };
+
+    async function initSmartAssets() {
+        for (const [id, data] of Object.entries(assetMap)) {
+            const el = document.getElementById(id);
+            if (!el) continue;
+            
+            // Try each extension
+            for (const ext of data.exts) {
+                const testUrl = `${data.base}.${ext}`;
+                try {
+                    const response = await fetch(testUrl, { method: 'HEAD' });
+                    if (response.ok) {
+                        el.src = testUrl;
+                        // If it's a source tag, we need to reload the parent
+                        if (el.tagName === 'SOURCE') {
+                            el.parentElement.load();
+                        }
+                        break;
+                    }
+                } catch (e) {
+                    // Fallback to default if fetch fails (e.g. CORS or file not found)
+                }
+            }
+        }
+    }
+
+    initSmartAssets();
 
     let isMusicPlaying = false;
     let isVideoPlaying = false;
